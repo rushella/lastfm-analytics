@@ -1,3 +1,4 @@
+using IF.Lastfm.Core.Api;
 using LastFM.Analytics.API.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,6 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddSqlite<DataContext>(builder.Configuration["SqliteConnectionString"]);
+
+var lastFmClient = new LastfmClient(builder.Configuration["LastFmApiKey"], builder.Configuration["LastFmApiSecret"]);
+
+builder.Services.AddSingleton(lastFmClient);
 
 var app = builder.Build();
 
