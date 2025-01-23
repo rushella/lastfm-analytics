@@ -8,17 +8,39 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LastFM.Analytics.API.Database.Migrations
+namespace LastFM.Analytics.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250123184926_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250123220153_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.1");
+
+            modelBuilder.Entity("LastFM.Analytics.API.Database.Entities.SyncTask", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SyncTask", (string)null);
+                });
 
             modelBuilder.Entity("LastFM.Analytics.API.Database.Entities.User", b =>
                 {
@@ -61,6 +83,22 @@ namespace LastFM.Analytics.API.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("User", (string)null);
+                });
+
+            modelBuilder.Entity("LastFM.Analytics.API.Database.Entities.SyncTask", b =>
+                {
+                    b.HasOne("LastFM.Analytics.API.Database.Entities.User", "User")
+                        .WithMany("SyncTasks")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LastFM.Analytics.API.Database.Entities.User", b =>
+                {
+                    b.Navigation("SyncTasks");
                 });
 #pragma warning restore 612, 618
         }

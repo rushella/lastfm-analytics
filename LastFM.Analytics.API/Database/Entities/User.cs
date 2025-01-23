@@ -1,9 +1,5 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace LastFM.Analytics.API.Database.Entities;
 
-[PrimaryKey(nameof(Id))]
-[Index(nameof(Name), IsUnique = true)]
 public class User
 {
 	public required long Id { get; set; }
@@ -16,4 +12,6 @@ public class User
 	public string? ProfilePictureLinks { get; set; }
 	public required Uri Url { get;set; }
 	public required DateTime RegistrationDate { get; set; }
+	
+	public virtual IEnumerable<SyncTask>? SyncTasks { get; set; }
 }

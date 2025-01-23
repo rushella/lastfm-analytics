@@ -7,12 +7,12 @@ namespace LastFM.Analytics.API.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class UsersController(DataContext dataContext) : ControllerBase
+public class UsersController(DataContext _dataContext) : ControllerBase
 {
 	[HttpGet]
 	public async Task<ActionResult<User>> Get([FromQuery]string name)
 	{
-		var user = await dataContext.Users.Where((x) => x.Name == name).FirstOrDefaultAsync();
+		var user = await _dataContext.Users.Where((x) => x.Name == name).FirstOrDefaultAsync();
 		
 		if (user == null)
 		{

@@ -8,7 +8,20 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
 	public DbSet<User> Users { get; set; }
 	
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<User>().ToTable(nameof(User));
-    }
+	{
+		modelBuilder.Entity<User>((entity) => 
+		{
+			entity.ToTable(nameof(User));
+			entity.HasKey(x => x.Id);
+			entity.HasIndex(x => x.Name).IsUnique(true);
+		});
+
+		modelBuilder.Entity<SyncTask>((entity) => 
+		{
+			entity.ToTable(nameof(SyncTask));
+			entity.HasKey(x => x.Id);
+			entity.HasIndex(x => x.UserId).IsUnique(false);
+			entity.HasOne(x => x.User).WithMany(x => x.SyncTasks).HasForeignKey(x => x.UserId);
+		});
+	}
 }
