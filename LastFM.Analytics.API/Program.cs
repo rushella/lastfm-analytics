@@ -1,4 +1,4 @@
-using IF.Lastfm.Core.Api;
+using LastFM.Analytics.API.Extensions;
 using LastFM.Analytics.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,19 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
-var dbProvider = builder.Configuration["DbProvider"];
-
-builder.Services.AddDbContext<DataContext>(
-	options => _ = dbProvider switch
-	{
-		"SQLite" => options.UseSqlite(builder.Configuration["SQLiteConnectionString"], b => b.MigrationsAssembly("LastFM.Analytics.Data.SQLite")),
-		_ => throw new Exception($"Unsupported db provider: {dbProvider}")
-	}
-);
-
-var lastFmClient = new LastfmClient(builder.Configuration["LastFmApiKey"], builder.Configuration["LastFmApiSecret"]);
-
-builder.Services.AddSingleton(lastFmClient);
+builder.Services.AddLastFMClient(builder.Configuration);
+builder.Services.AddDataContext(builder.Configuration);
 
 var app = builder.Build();
 
