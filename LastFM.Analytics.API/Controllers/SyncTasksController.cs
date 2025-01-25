@@ -3,6 +3,7 @@ using LastFM.Analytics.Data.Entities;
 using LastFM.Analytics.Data;
 using Microsoft.AspNetCore.Mvc;
 using LastFM.Analytics.Data.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace LastFM.Analytics.API.Controllers;
 
@@ -11,7 +12,7 @@ namespace LastFM.Analytics.API.Controllers;
 public class SyncTasksController(DataContext dataContext) : ControllerBase
 {
 	[HttpPost("/sync-tasks")]
-	public async Task<IActionResult> Post([FromBody]PostSyncTaskBody requestBody)
+	public async Task<ActionResult<SyncTask>> Post([FromBody]PostSyncTaskBody requestBody)
 	{
 		var syncTask = new SyncTask
 		{
@@ -20,8 +21,18 @@ public class SyncTasksController(DataContext dataContext) : ControllerBase
 			Status = SyncTaskStatus.Scheduled
 		};
 
+		dataContext.Add(syncTask);
+
 		await dataContext.SaveChangesAsync();
 
 		return Ok(syncTask);
+	}
+
+	[HttpGet("/sync-tasks")]
+	public async Task<ActionResult<IEnumerable<SyncTask>>> GetAll()
+	{
+		var syncTasks = await dataContext.SyncTasks.Skip(0).Take(5).ToListAsync();
+
+		return Ok(syncTasks);
 	}
 }

@@ -6,6 +6,7 @@ namespace LastFM.Analytics.Data;
 public class DataContext(DbContextOptions<DataContext> options) : DbContext(options)
 {
 	public DbSet<User> Users { get; set; }
+	public DbSet<SyncTask> SyncTasks { get; set; }
 	
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{

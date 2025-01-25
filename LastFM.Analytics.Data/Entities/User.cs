@@ -2,7 +2,7 @@ namespace LastFM.Analytics.Data.Entities;
 
 public class User
 {
-	public required long Id { get; set; }
+	public long Id { get; set; }
 	public required string Name { get; set; }
 	public required long PlayCount { get; set; }
 	public required long ArtistCount { get; set; }
