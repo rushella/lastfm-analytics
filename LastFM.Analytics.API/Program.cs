@@ -1,4 +1,5 @@
 using LastFM.Analytics.API.Extensions;
+using LastFM.Analytics.API.Services;
 using LastFM.Analytics.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddLastFMClient(builder.Configuration);
 builder.Services.AddDataContext(builder.Configuration);
+builder.Services.AddHostedService<SyncTaskBackgroundService>();
 
 var app = builder.Build();
 
