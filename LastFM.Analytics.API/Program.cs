@@ -11,6 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddLastFMClient(builder.Configuration);
 builder.Services.AddDataContext(builder.Configuration);
 builder.Services.AddHostedService<SyncTaskBackgroundService>();
+builder.Services.AddTransient<LastFmSyncService>();
 
 var app = builder.Build();
 

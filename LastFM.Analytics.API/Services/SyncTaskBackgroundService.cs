@@ -1,19 +1,16 @@
-using System.Text.Json;
-using IF.Lastfm.Core.Api;
 using LastFM.Analytics.Data;
-using LastFM.Analytics.Data.Entities;
 using LastFM.Analytics.Data.Enums;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace LastFM.Analytics.API.Services
 {
-	public class SyncTaskBackgroundService(LastfmClient lastfmClient, IServiceScopeFactory serviceScopeFactory) : BackgroundService
+	public class SyncTaskBackgroundService(IServiceScopeFactory serviceScopeFactory) : BackgroundService
 	{
 		protected override async Task ExecuteAsync(CancellationToken cancellationToken)
 		{
 			var scope = serviceScopeFactory.CreateScope();
 			var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+			var lastFmSyncService = scope.ServiceProvider.GetRequiredService<LastFmSyncService>();
 
 			while (!cancellationToken.IsCancellationRequested)
 			{
@@ -34,44 +31,19 @@ namespace LastFM.Analytics.API.Services
 				switch (newSyncTask.Type)
 				{
 					case SyncTaskType.UserInfoSync:
-						var userInDatabase = await dataContext.Users.SingleOrDefaultAsync(x => x.Name == newSyncTask.UserName, cancellationToken);
-
-						var userInfo = await lastfmClient.User.GetInfoAsync(newSyncTask.UserName);
-
-						if (!userInfo.Success)
+						var userSyncResult = await lastFmSyncService.SyncUserInfo(newSyncTask.UserName, cancellationToken);
+						if (userSyncResult.IsSucceded)
 						{
-							newSyncTask.Status = SyncTaskStatus.Failed;
-						}
-
-						if (userInDatabase == null)
-						{
-							var newUser = new User
-							{
-								AlbumCount = 0,
-								ArtistCount = 0,
-								PlayCount = userInfo.Content.Playcount,
-								Name = userInfo.Content.Name,
-								ProfilePictureLinks = JsonSerializer.Serialize(userInfo.Content.Avatar),
-								RegistrationDate = userInfo.Content.TimeRegistered,
-								TrackCount = 0,
-								Url = new Uri("https://last.fm/" + userInfo.Content.Name)
-							};
-							dataContext.Add(newUser);
+							newSyncTask.Status = SyncTaskStatus.Finished;
 						}
 						else 
 						{
-							userInDatabase.AlbumCount = 0;
-							userInDatabase.ArtistCount = 0;
-							userInDatabase.PlayCount = userInfo.Content.Playcount;
-							userInDatabase.Name = userInfo.Content.Name;
-							userInDatabase.ProfilePictureLinks = JsonSerializer.Serialize(userInfo.Content.Avatar);
-							userInDatabase.RegistrationDate = userInfo.Content.TimeRegistered;
-							userInDatabase.TrackCount = 0;
-							userInDatabase.Url = new Uri("https://last.fm/" + userInfo.Content.Name);
+							newSyncTask.Status = SyncTaskStatus.Failed;
 						}
-						await dataContext.SaveChangesAsync(cancellationToken);
 						break;
 				}
+				
+				await dataContext.SaveChangesAsync(cancellationToken);
 			}
 		}
 	}

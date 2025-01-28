@@ -29,10 +29,18 @@ public class SyncTasksController(DataContext dataContext) : ControllerBase
 	}
 
 	[HttpGet("/sync-tasks")]
-	public async Task<ActionResult<IEnumerable<SyncTask>>> GetAll()
+	public async Task<ActionResult<IEnumerable<SyncTask>>> GetAll([FromQuery]Pagination pagination)
 	{
-		var syncTasks = await dataContext.SyncTasks.Skip(0).Take(5).ToListAsync();
+		var toSkipCount = pagination.Page * pagination.Count;
+		var toTakeCount = pagination.Count;
+		
+		var syncTasks = await dataContext.SyncTasks
+			.Skip(toSkipCount)
+			.Take(toTakeCount)
+			.ToListAsync();
 
 		return Ok(syncTasks);
 	}
 }
+
+public record Pagination(int Page, int Count);
