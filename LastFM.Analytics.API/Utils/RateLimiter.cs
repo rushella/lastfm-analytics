@@ -1,6 +1,6 @@
 namespace LastFM.Analytics.API.Utils;
 
-public class OutgoingRequestRateLimiter(int count, TimeSpan timeFrame)
+public class RateLimiter(int count, TimeSpan timeFrame)
 {
 	private readonly SemaphoreSlim _semaphore = new(1);
 	private readonly Queue<DateTime> _times = new(count);
