@@ -12,10 +12,10 @@ namespace LastFM.Analytics.API.Extensions
 		{
 			var dbProvider = configuration["DbProvider"];
 
-			services.AddDbContext<SqlLiteDbContext>(
+			services.AddDbContext<DatabaseContext>(
 				options => _ = dbProvider switch
 				{
-					"SQLite" => options.UseSqlite(configuration["SQLiteConnectionString"], b => b.MigrationsAssembly("LastFM.Analytics.Data.SQLite")),
+					"SQLite" => options.UseSqlite(configuration["SQLiteConnectionString"]),
 					_ => throw new Exception($"Unsupported db provider: {dbProvider}")
 				}
 			);

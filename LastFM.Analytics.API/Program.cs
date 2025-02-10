@@ -28,6 +28,6 @@ app.MapControllers();
 app.UseHttpsRedirection();
 
 var scope = app.Services.CreateScope();
-scope.ServiceProvider.GetRequiredService<SqlLiteDbContext>().Database.Migrate();
+scope.ServiceProvider.GetRequiredService<DatabaseContext>().Database.Migrate();
 
 app.Run();
