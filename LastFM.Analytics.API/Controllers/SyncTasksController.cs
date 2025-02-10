@@ -1,46 +1,23 @@
 using LastFM.Analytics.API.Contracts.Requests;
-using LastFM.Analytics.Data.Entities;
-using LastFM.Analytics.Data;
+using LastFM.Analytics.API.Contracts.Responses;
 using Microsoft.AspNetCore.Mvc;
-using LastFM.Analytics.Data.Enums;
-using Microsoft.EntityFrameworkCore;
+using Quartz;
 
 namespace LastFM.Analytics.API.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class SyncTasksController(DataContext dataContext) : ControllerBase
+public class SyncTasksController(ISchedulerFactory schedulerFactory) : ControllerBase
 {
 	[HttpPost("/sync-tasks")]
-	public async Task<ActionResult<SyncTask>> Post([FromBody]PostSyncTaskBody requestBody)
+	public async Task<ActionResult<PostSyncTaskResponse>> Post([FromBody]PostSyncTaskRequest request)
 	{
-		var syncTask = new SyncTask
+		var scheduler = await schedulerFactory.GetScheduler();
+
+		var response = new PostSyncTaskResponse
 		{
-			UserName = requestBody.UserName,
-			Type = requestBody.Type,
-			Status = SyncTaskStatus.Scheduled
 		};
-
-		dataContext.Add(syncTask);
-
-		await dataContext.SaveChangesAsync();
-
-		return Ok(syncTask);
-	}
-
-	[HttpGet("/sync-tasks")]
-	public async Task<ActionResult<IEnumerable<SyncTask>>> GetAll([FromQuery]Pagination pagination)
-	{
-		var toSkipCount = pagination.Page * pagination.Count;
-		var toTakeCount = pagination.Count;
 		
-		var syncTasks = await dataContext.SyncTasks
-			.Skip(toSkipCount)
-			.Take(toTakeCount)
-			.ToListAsync();
-
-		return Ok(syncTasks);
+		return Ok();
 	}
 }
-
-public record Pagination(int Page, int Count);

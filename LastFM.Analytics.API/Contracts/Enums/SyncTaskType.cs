@@ -1,4 +1,4 @@
-namespace LastFM.Analytics.Data.Enums;
+namespace LastFM.Analytics.API.Contracts.Enums;
 
 public enum SyncTaskType 
 {
