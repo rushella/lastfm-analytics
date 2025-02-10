@@ -2,7 +2,7 @@ using IF.Lastfm.Core.Api;
 using LastFM.Analytics.API.Utils;
 using LastFM.Analytics.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Quartz;
 
 namespace LastFM.Analytics.API.Extensions
 {
@@ -12,13 +12,35 @@ namespace LastFM.Analytics.API.Extensions
 		{
 			var dbProvider = configuration["DbProvider"];
 
-			services.AddDbContext<DataContext>(
+			services.AddDbContext<SqlLiteDbContext>(
 				options => _ = dbProvider switch
 				{
 					"SQLite" => options.UseSqlite(configuration["SQLiteConnectionString"], b => b.MigrationsAssembly("LastFM.Analytics.Data.SQLite")),
 					_ => throw new Exception($"Unsupported db provider: {dbProvider}")
 				}
 			);
+
+			return services;
+		}
+		
+		public static IServiceCollection AddPersistentQuartz(this IServiceCollection services, IConfiguration configuration)
+		{
+			var dbProvider = configuration["DbProvider"];
+
+			services.AddQuartz(quartz =>
+			{
+				quartz.UsePersistentStore(config =>
+				{
+					switch (dbProvider)
+					{
+						case "SQLite":
+							config.UseSQLite(configuration["SQLiteConnectionString"]);
+							break;
+						default:
+							throw new Exception($"Unsupported db provider: {dbProvider}");
+					}
+				});
+			});
 
 			return services;
 		}
