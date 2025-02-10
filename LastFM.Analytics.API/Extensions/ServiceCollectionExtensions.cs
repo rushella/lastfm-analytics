@@ -47,7 +47,7 @@ namespace LastFM.Analytics.API.Extensions
 
 		public static IServiceCollection AddLastFMClient(this IServiceCollection services, IConfiguration configuration)
 		{
-			var httpClient = new HttpClient(new LastFmRequestRateLimiter(new OutgoingRequestRateLimiter(5, TimeSpan.FromSeconds(1))));
+			var httpClient = new HttpClient(new HttpRequestRateLimiter(new RateLimiter(5, TimeSpan.FromSeconds(1))));
 			var lastFmClient = new LastfmClient(configuration["LastFmApiKey"], configuration["LastFmApiSecret"], httpClient);
 
 			services.AddSingleton(lastFmClient);
