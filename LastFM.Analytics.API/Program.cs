@@ -8,9 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
+builder.Services.AddPersistentQuartz(builder.Configuration);
 builder.Services.AddLastFMClient(builder.Configuration);
 builder.Services.AddDataContext(builder.Configuration);
-builder.Services.AddHostedService<SyncTaskBackgroundService>();
+
 builder.Services.AddTransient<LastFmSyncService>();
 
 var app = builder.Build();
@@ -27,6 +28,6 @@ app.MapControllers();
 app.UseHttpsRedirection();
 
 var scope = app.Services.CreateScope();
-scope.ServiceProvider.GetRequiredService<DataContext>().Database.Migrate();
+scope.ServiceProvider.GetRequiredService<SqlLiteDbContext>().Database.Migrate();
 
 app.Run();
