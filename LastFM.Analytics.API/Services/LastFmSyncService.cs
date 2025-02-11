@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LastFM.Analytics.API.Services;
 
-public class LastFmSyncService(DataContext dataContext, LastfmClient lastfmClient)
+public class LastFmSyncService(DatabaseContext databaseContext, LastfmClient lastfmClient)
 {
 	public async Task<SyncResult> SyncUserInfo(string username, CancellationToken cancellationToken)
 	{
-		var userInDatabase = await dataContext.Users.SingleOrDefaultAsync(x => x.Name == username, cancellationToken);
+		var userInDatabase = await databaseContext.Users.SingleOrDefaultAsync(x => x.Name == username, cancellationToken);
 
 		var userInfo = await lastfmClient.User.GetInfoAsync(username);
 
@@ -33,7 +33,7 @@ public class LastFmSyncService(DataContext dataContext, LastfmClient lastfmClien
 				TrackCount = 0,
 				Url = new Uri("https://last.fm/" + userInfo.Content.Name)
 			};
-			dataContext.Add(newUser);
+			databaseContext.Add(newUser);
 		}
 		else
 		{
@@ -46,7 +46,7 @@ public class LastFmSyncService(DataContext dataContext, LastfmClient lastfmClien
 			userInDatabase.TrackCount = 0;
 			userInDatabase.Url = new Uri("https://last.fm/" + userInfo.Content.Name);
 		}
-		await dataContext.SaveChangesAsync(cancellationToken);
+		await databaseContext.SaveChangesAsync(cancellationToken);
 		
 		return new SyncResult { IsSucceded = true };
 	}
