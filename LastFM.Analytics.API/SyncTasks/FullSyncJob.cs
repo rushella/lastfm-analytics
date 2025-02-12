@@ -7,7 +7,7 @@ using Quartz;
 
 namespace LastFM.Analytics.API.SyncTasks;
 
-public class FullSyncTask(DatabaseContext databaseContext, IUserApi lastFmUserApi) : IJob
+public class FullSyncJob(DatabaseContext databaseContext, IUserApi lastFmUserApi) : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
