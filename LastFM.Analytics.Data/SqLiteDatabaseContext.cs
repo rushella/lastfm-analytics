@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LastFM.Analytics.Data;
 
-public sealed class SqLiteDatabaseContext(DbContextOptions<DatabaseContext> options)
+public sealed class SqLiteDatabaseContext(DbContextOptions options)
     : DatabaseContext(options)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)

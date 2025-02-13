@@ -1,4 +1,5 @@
 using IF.Lastfm.Core.Api;
+using LastFM.Analytics.API.SyncTasks;
 using LastFM.Analytics.API.Utils;
 using LastFM.Analytics.Data;
 using Microsoft.EntityFrameworkCore;
@@ -11,14 +12,19 @@ namespace LastFM.Analytics.API.Extensions
 		public static IServiceCollection AddDataContext(this IServiceCollection services, IConfiguration configuration)
 		{
 			var dbProvider = configuration["DbProvider"];
-
-			services.AddDbContext<DatabaseContext>(
-				options => _ = dbProvider switch
-				{
-					"SQLite" => options.UseSqlite(configuration["SQLiteConnectionString"]),
-					_ => throw new Exception($"Unsupported db provider: {dbProvider}")
-				}
-			);
+			
+			switch (dbProvider)
+			{
+				case "SQLite":
+					services.AddDbContext<DatabaseContext, SqLiteDatabaseContext>((dbOptions) =>
+					{
+						var sqliteConnectionString = configuration["SQLiteConnectionString"];
+						dbOptions.UseSqlite(sqliteConnectionString, sqliteOptions => sqliteOptions.MigrationsAssembly("LastFM.Analytics.Data"));
+					});
+					break;
+				default:
+					throw new Exception($"Unsupported db provider: {dbProvider}");
+			}
 
 			return services;
 		}
@@ -39,7 +45,10 @@ namespace LastFM.Analytics.API.Extensions
 						default:
 							throw new Exception($"Unsupported db provider: {dbProvider}");
 					}
+					config.UseBinarySerializer();
 				});
+
+				quartz.AddJob<FullSyncJob>(options => options.WithIdentity(nameof(FullSyncJob)));
 			});
 
 			return services;
