@@ -45,7 +45,7 @@ namespace LastFM.Analytics.API.Extensions
 						default:
 							throw new Exception($"Unsupported db provider: {dbProvider}");
 					}
-					config.UseBinarySerializer();
+					config.UseSystemTextJsonSerializer();
 				});
 
 				quartz.AddJob<FullSyncJob>(options => options.WithIdentity(nameof(FullSyncJob)));
