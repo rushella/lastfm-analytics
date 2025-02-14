@@ -4,6 +4,7 @@ using LastFM.Analytics.API.Utils;
 using LastFM.Analytics.Data;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
+using Quartz.AspNetCore;
 
 namespace LastFM.Analytics.API.Extensions
 {
@@ -48,9 +49,14 @@ namespace LastFM.Analytics.API.Extensions
 					config.UseSystemTextJsonSerializer();
 				});
 
-				quartz.AddJob<FullSyncJob>(options => options.WithIdentity(nameof(FullSyncJob)));
+				quartz.AddJob<FullSyncJob>(options => options.WithIdentity(nameof(FullSyncJob)).StoreDurably().Build());
 			});
 
+			services.AddQuartzServer(quartz =>
+			{
+				quartz.WaitForJobsToComplete = true;
+			});
+			
 			return services;
 		}
 
