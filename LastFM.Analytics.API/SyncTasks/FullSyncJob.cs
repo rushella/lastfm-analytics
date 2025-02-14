@@ -7,15 +7,15 @@ using Quartz;
 
 namespace LastFM.Analytics.API.SyncTasks;
 
-public class FullSyncJob(DatabaseContext databaseContext, IUserApi lastFmUserApi) : IJob
+public class FullSyncJob(DatabaseContext databaseContext, LastfmClient lastFmClient) : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
-        var userName = context.Get("LastFmUserName")?.ToString();
+        var userName = context.MergedJobDataMap["LastFmUserName"].ToString();
         
         var userInDatabase = await databaseContext.Users.SingleOrDefaultAsync(x => x.Name == userName, context.CancellationToken);
 
-        var userInfo = await lastFmUserApi.GetInfoAsync(userName);
+        var userInfo = await lastFmClient.User.GetInfoAsync(userName);
 
         if (!userInfo.Success)
         {

@@ -1,5 +1,7 @@
+using LastFM.Analytics.API.Contracts.Enums;
 using LastFM.Analytics.API.Contracts.Requests;
 using LastFM.Analytics.API.Contracts.Responses;
+using LastFM.Analytics.API.SyncTasks;
 using Microsoft.AspNetCore.Mvc;
 using Quartz;
 
@@ -13,10 +15,19 @@ public class SyncTasksController(ISchedulerFactory schedulerFactory) : Controlle
 	public async Task<ActionResult<PostSyncTaskResponse>> Post([FromBody]PostSyncTaskRequest request)
 	{
 		var scheduler = await schedulerFactory.GetScheduler();
-
-		var response = new PostSyncTaskResponse
+		
+		switch (request.Type)
 		{
-		};
+			case SyncTaskType.UserInfoSync:
+				break;
+			case SyncTaskType.UserScrobblesSync:
+				break;
+			case SyncTaskType.FullSync:
+				await scheduler.TriggerJob(new JobKey(nameof(FullSyncJob)), new JobDataMap { { "LastFmUserName", request.UserName } });
+				break;
+			default:
+				throw new ArgumentOutOfRangeException();
+		}
 		
 		return Ok();
 	}
