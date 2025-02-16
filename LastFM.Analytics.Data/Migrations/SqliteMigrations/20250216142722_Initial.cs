@@ -112,14 +112,12 @@ namespace LastFM.Analytics.Data.Migrations.SqliteMigrations
                     Id = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
-                    PlayCount = table.Column<long>(type: "INTEGER", nullable: false),
-                    ArtistCount = table.Column<long>(type: "INTEGER", nullable: false),
-                    TrackCount = table.Column<long>(type: "INTEGER", nullable: false),
-                    AlbumCount = table.Column<long>(type: "INTEGER", nullable: false),
                     Country = table.Column<string>(type: "TEXT", nullable: true),
                     ProfilePictureLinks = table.Column<string>(type: "TEXT", nullable: true),
                     Url = table.Column<string>(type: "TEXT", nullable: false),
-                    RegistrationDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    RegisteredAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    LastSyncedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    SyncStatus = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {

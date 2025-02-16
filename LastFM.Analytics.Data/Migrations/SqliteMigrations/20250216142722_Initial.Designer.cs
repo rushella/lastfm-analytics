@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LastFM.Analytics.Data.Migrations.SqliteMigrations
 {
     [DbContext(typeof(SqLiteDatabaseContext))]
-    [Migration("20250210181825_Initial")]
+    [Migration("20250216142722_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -469,29 +469,23 @@ namespace LastFM.Analytics.Data.Migrations.SqliteMigrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<long>("AlbumCount")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("ArtistCount")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Country")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("LastSyncedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<long>("PlayCount")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("ProfilePictureLinks")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("RegistrationDate")
+                    b.Property<DateTime?>("RegisteredAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<long>("TrackCount")
+                    b.Property<int?>("SyncStatus")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Url")
