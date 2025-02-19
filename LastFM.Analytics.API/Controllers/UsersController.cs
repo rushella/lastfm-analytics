@@ -46,4 +46,24 @@ public class UsersController(DatabaseContext databaseContext, ISchedulerFactory 
 		
 		return Ok(newUser);
 	}
+	
+	[HttpPatch("/{username}")]
+	public async Task<ActionResult<User>> Patch(string username, [FromBody]PatchUserRequest request)
+	{
+		var existingUser = await databaseContext.Users.Where((x) => x.Name == username).FirstOrDefaultAsync();
+		
+		if (existingUser == null)
+		{
+			return NotFound();
+		}
+
+		existingUser.SyncStatus = request.SyncStatus;
+		
+		await databaseContext.SaveChangesAsync();
+		
+		var scheduler = await schedulerFactory.GetScheduler();
+		await scheduler.TriggerJob(new JobKey(nameof(FullSyncJob)), new JobDataMap { { "UserId", existingUser.Id } });
+		
+		return Ok(existingUser);
+	}
 }
