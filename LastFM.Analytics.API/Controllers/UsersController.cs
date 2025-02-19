@@ -1,7 +1,8 @@
-using LastFM.Analytics.API.Contracts.Enums;
+using LastFM.Analytics.API.Contracts.Requests;
 using LastFM.Analytics.API.SyncTasks;
 using LastFM.Analytics.Data;
 using LastFM.Analytics.Data.Entities;
+using LastFM.Analytics.Data.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
@@ -25,20 +26,24 @@ public class UsersController(DatabaseContext databaseContext, ISchedulerFactory 
 		return Ok(user);
 	}
 	
-	[HttpPost("/{username}/full-sync")]
-	public async Task<ActionResult<User>> Post(string username)
+	[HttpPost]
+	public async Task<ActionResult<User>> Post([FromBody]PostUserRequest request)
 	{
-		var user = await databaseContext.Users.Where((x) => x.Name == username).FirstOrDefaultAsync();
+		var existingUser = await databaseContext.Users.Where((x) => x.Name == request.UserName).FirstOrDefaultAsync();
 		
-		if (user == null)
+		if (existingUser != null)
 		{
-			return NotFound();
+			return Conflict();
 		}
+
+		var newUser = new User { Name = request.UserName, SyncStatus = SyncStatus.Scheduled };
+
+		await databaseContext.Users.AddAsync(newUser);
+		await databaseContext.SaveChangesAsync();
 		
 		var scheduler = await schedulerFactory.GetScheduler();
+		await scheduler.TriggerJob(new JobKey(nameof(FullSyncJob)), new JobDataMap { { "UserId", newUser.Id } });
 		
-		await scheduler.TriggerJob(new JobKey(nameof(FullSyncJob)), new JobDataMap { { "UserId", user.Id } });
-		
-		return Ok(user);
+		return Ok(newUser);
 	}
 }
