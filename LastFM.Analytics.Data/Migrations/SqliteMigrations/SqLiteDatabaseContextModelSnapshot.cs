@@ -476,7 +476,7 @@ namespace LastFM.Analytics.Data.Migrations.SqliteMigrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ProfilePictureLinks")
+                    b.Property<string>("PictureLinks")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("RegisteredAt")
@@ -486,7 +486,6 @@ namespace LastFM.Analytics.Data.Migrations.SqliteMigrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Url")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

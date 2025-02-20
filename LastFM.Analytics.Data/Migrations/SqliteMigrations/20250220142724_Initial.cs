@@ -113,8 +113,8 @@ namespace LastFM.Analytics.Data.Migrations.SqliteMigrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Country = table.Column<string>(type: "TEXT", nullable: true),
-                    ProfilePictureLinks = table.Column<string>(type: "TEXT", nullable: true),
-                    Url = table.Column<string>(type: "TEXT", nullable: false),
+                    PictureLinks = table.Column<string>(type: "TEXT", nullable: true),
+                    Url = table.Column<string>(type: "TEXT", nullable: true),
                     RegisteredAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     LastSyncedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     SyncStatus = table.Column<int>(type: "INTEGER", nullable: true)

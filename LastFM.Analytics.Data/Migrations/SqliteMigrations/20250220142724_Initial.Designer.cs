@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LastFM.Analytics.Data.Migrations.SqliteMigrations
 {
     [DbContext(typeof(SqLiteDatabaseContext))]
-    [Migration("20250216142722_Initial")]
+    [Migration("20250220142724_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -479,7 +479,7 @@ namespace LastFM.Analytics.Data.Migrations.SqliteMigrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ProfilePictureLinks")
+                    b.Property<string>("PictureLinks")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("RegisteredAt")
@@ -489,7 +489,6 @@ namespace LastFM.Analytics.Data.Migrations.SqliteMigrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Url")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
