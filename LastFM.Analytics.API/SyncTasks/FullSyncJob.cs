@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using IF.Lastfm.Core.Api;
 using LastFM.Analytics.Data;
+using LastFM.Analytics.Data.Enums;
 using Quartz;
 
 namespace LastFM.Analytics.API.SyncTasks;
@@ -27,6 +28,9 @@ public class FullSyncJob(DatabaseContext databaseContext, LastfmClient lastFmCli
         user.Name = lastFmResponse.Content.Name;
         user.PictureLinks = JsonSerializer.Serialize(lastFmResponse.Content.Avatar);
         user.Url = new Uri("https://last.fm/" + lastFmResponse.Content.Name);
+        user.RegisteredAt = lastFmResponse.Content.TimeRegistered;
+        user.LastSyncedAt = DateTime.UtcNow;
+        user.SyncStatus = SyncStatus.Finished;
 
         await databaseContext.SaveChangesAsync(context.CancellationToken);
     }
