@@ -8,8 +8,8 @@ public class User
 	public required string Name { get; set; }
 	
 	public string? Country { get; set; }
-	public string? ProfilePictureLinks { get; set; }
-	public required Uri Url { get;set; }
+	public string? PictureLinks { get; set; }
+	public Uri? Url { get;set; }
 	public DateTime? RegisteredAt { get; set; }
 	public DateTime? LastSyncedAt { get; set; }
 	public SyncStatus? SyncStatus { get; set; }
