@@ -22,6 +22,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 app.UseHttpsRedirection();
 
 var scope = app.Services.CreateScope();

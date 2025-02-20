@@ -47,10 +47,10 @@ public class UsersController(DatabaseContext databaseContext, ISchedulerFactory 
 		return Ok(newUser);
 	}
 	
-	[HttpPatch("/{username}")]
-	public async Task<ActionResult<User>> Patch(string username, [FromBody]PatchUserRequest request)
+	[HttpPatch]
+	public async Task<ActionResult<User>> Patch(string userName, [FromBody]PatchUserRequest request)
 	{
-		var existingUser = await databaseContext.Users.Where((x) => x.Name == username).FirstOrDefaultAsync();
+		var existingUser = await databaseContext.Users.Where((x) => x.Name == userName).FirstOrDefaultAsync();
 		
 		if (existingUser == null)
 		{
