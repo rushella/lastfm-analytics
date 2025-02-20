@@ -25,7 +25,7 @@ public class FullSyncJob(DatabaseContext databaseContext, LastfmClient lastFmCli
         }
 
         user.Name = lastFmResponse.Content.Name;
-        user.ProfilePictureLinks = JsonSerializer.Serialize(lastFmResponse.Content.Avatar);
+        user.PictureLinks = JsonSerializer.Serialize(lastFmResponse.Content.Avatar);
         user.Url = new Uri("https://last.fm/" + lastFmResponse.Content.Name);
 
         await databaseContext.SaveChangesAsync(context.CancellationToken);
